@@ -54,7 +54,7 @@ export const PersonalizedWelcome: React.FC<PersonalizedWelcomeProps> = ({
       {/* 欢迎文字 */}
       <div className="mb-4">
         <h1 className="flat-text-primary mb-2">
-          {getGreeting()}，{userName ? `${userName}！` : '欢迎使用 TabVault Pro！'}
+          {getGreeting()}，{userName ? `${userName}！` : '欢迎使用 Tag Collector！'}
         </h1>
         <p className="flat-text-tertiary text-sm max-w-md mx-auto">
           {getMotivationalMessage()}

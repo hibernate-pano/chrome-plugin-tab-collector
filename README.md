@@ -1,65 +1,92 @@
-# TabVault Pro
+# Tag Collector
 
-当前版本：`1.11.5`
+Current version: `0.1`
 
-TabVault Pro 是一个完全本地化的 Chrome 标签页会话工具。它的目标很直接：把当前浏览器工作现场保存下来，之后还能快速找回、恢复和继续。
+Tag Collector is a local-first Chrome extension for saving tab sessions, finding them quickly, and reopening them when you need to resume work.
 
-## 当前能力
+## What It Does
 
-- 保存当前窗口中的标签页为一个会话
-- 按会话名称、备注、标签标题、URL 搜索内容
-- 收藏、备注、重命名、锁定、删除会话
-- 在新窗口中恢复整个会话
-- 查看最近恢复记录
-- 导入 / 导出 JSON 备份
-- 导入 / 导出 OneTab 文本格式
-- 所有数据默认保存在当前浏览器扩展存储中
+- Save the current window as a session
+- Search saved sessions by session name, notes, tab title, and URL
+- Rename, lock, favorite, annotate, and delete sessions
+- Restore an entire session in a new window
+- Reopen items from recent restore history
+- Clean duplicate tabs and remove empty sessions
+- Import and export JSON backups
+- Import and export OneTab text format
+- Switch between single-column and two-column layouts
+- Use multiple built-in visual themes
 
-## 本地模式
+## Local-Only Behavior
 
-这个仓库现在只保留本地能力：
+This project currently keeps only local capabilities:
 
-- 没有登录、注册、账号状态
-- 没有云端同步、跨设备同步、后台联网
-- 插件断网也可以正常使用
+- No account system
+- No cloud sync
+- No cross-device sync
+- No background network dependency
+- Works offline after installation
 
-## 安装
+All data is stored in browser extension storage on the current machine.
+
+## Permissions
+
+The extension currently requests:
+
+- `tabs`
+- `storage`
+- `unlimitedStorage`
+- `notifications`
+- `contextMenus`
+
+It does not declare any `host_permissions`.
+
+## Install for Development
 
 ```bash
-git clone https://github.com/hibernate-pano/chrome-plugin-one-tab.git
-cd chrome-plugin-one-tab
 pnpm install
 pnpm build
 ```
 
-然后在 `chrome://extensions/` 中开启开发者模式并加载 `dist` 目录。
+Then open `chrome://extensions`, enable Developer mode, and load the `dist` directory as an unpacked extension.
 
-## 使用方式
+## Basic Usage
 
-### 保存会话
+### Save a session
 
-- 点击扩展图标，或在主界面点击“保存会话”
-- 当前窗口中的标签页会被保存成一个新会话
-- 可配置是否一并保存固定标签页
+- Open the extension popup
+- Click the save action to capture the current window
+- Optionally include pinned tabs based on settings
 
-### 找回会话
+### Find a saved session
 
-- 在搜索框中输入会话名、备注、标签标题或 URL
-- 搜索结果会优先展示匹配到的会话，再展开具体标签命中
-- 可按域名、固定标签、保存时间继续筛选
+- Use the search box to search by session name, note, tab title, or URL
+- Browse recent restore history from the main view
+- Switch layout mode if you prefer a different session list density
 
-### 恢复会话
+### Restore a session
 
-- 点击会话卡片上的“恢复整个会话”
-- 会在新窗口中恢复该会话
-- 未锁定会话恢复后会从列表中移除；锁定会话会保留
+- Open a saved session card
+- Restore the full session into a new browser window
+- Locked sessions stay saved after restore
 
-### 导入 / 导出
+### Import and export
 
-- 支持 JSON 备份导出
-- 支持 OneTab 文本导入和导出
+- Export all saved data as JSON
+- Import JSON backups created by this extension
+- Import or export the OneTab text format for migration workflows
 
-## 开发
+## Keyboard Shortcuts
+
+The manifest defines these commands:
+
+- `Command+Shift+S` / `Ctrl+Shift+S`: open the tab manager
+- `Alt+Shift+S`: save all tabs
+- `Alt+S`: save the current tab
+
+Shortcut behavior may be customized by Chrome from the extensions shortcuts page.
+
+## Development Commands
 
 ```bash
 pnpm type-check
@@ -68,11 +95,12 @@ pnpm build
 pnpm validate
 ```
 
-## 隐私与数据
+## Privacy
 
-- 插件不会要求账号
-- 插件不会连接云端服务
-- 数据只保存在本地浏览器扩展存储中
+- No sign-in flow
+- No cloud service integration
+- No remote sync path
+- Data stays in local extension storage unless you export it yourself
 
 ## License
 

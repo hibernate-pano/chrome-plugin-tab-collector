@@ -7,7 +7,7 @@ interface TabVaultIconProps {
 }
 
 /**
- * TabVault Pro 品牌图标组件
+ * Tag Collector 品牌图标组件
  * 现代简约风格
  */
 export const TabVaultIcon: React.FC<TabVaultIconProps> = ({
@@ -56,7 +56,7 @@ export const TabVaultIcon: React.FC<TabVaultIconProps> = ({
 };
 
 /**
- * TabVault Pro 文字Logo组件
+ * Tag Collector 文字Logo组件
  * 精致简约风格
  */
 export const TabVaultLogo: React.FC<{
@@ -104,7 +104,7 @@ export const TabVaultLogo: React.FC<{
           className={`font-semibold tracking-tight ${getSizeClasses()}`}
           style={{ color: 'var(--color-text-primary)' }}
         >
-          TabVault
+          Tag Collector
         </span>
         <span
           className="text-xs font-medium px-1.5 py-0.5 rounded-md"
@@ -113,7 +113,7 @@ export const TabVaultLogo: React.FC<{
             color: 'var(--color-accent)'
           }}
         >
-          Pro
+          Local
         </span>
       </div>
     </div>
