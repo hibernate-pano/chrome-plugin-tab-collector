@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loadGroups, moveTabAndSync } from '@/store/slices/tabSlice';
+import { loadGroups, moveTabPersisted } from '@/store/slices/tabSlice';
 import { SearchResultList } from '@/components/search/SearchResultList';
 import { SimpleDraggableTabGroup } from '@/components/dnd/SimpleDraggableTabGroup';
 import '@/styles/drag-drop.css';
@@ -80,7 +80,7 @@ export const SimpleTabList: React.FC<SimpleTabListProps> = ({ searchQuery }) => 
         const targetIndex = overData.index;
 
         // 执行标签页移动
-        dispatch(moveTabAndSync({
+        dispatch(moveTabPersisted({
           sourceGroupId,
           sourceIndex,
           targetGroupId,

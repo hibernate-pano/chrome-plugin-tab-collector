@@ -515,7 +515,7 @@ export const SearchResultList: React.FC<SearchResultListProps> = ({ searchQuery 
                 <ul className="list-disc list-inside space-y-0.5 text-left">
                   <li>支持搜索会话名称、备注、标签标题或 URL</li>
                   <li>可结合域名、保存时间和固定标签筛选</li>
-                  <li>如果刚换设备，可先登录后手动同步一次</li>
+                  <li>如果刚做过导入，可尝试重新打开插件刷新结果</li>
                 </ul>
               </div>
             </div>

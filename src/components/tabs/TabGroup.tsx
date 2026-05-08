@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { recordRecentRestore, updateGroupNameAndSync, toggleGroupLockAndSync, deleteGroup, updateGroup, moveTabAndSync } from '@/store/slices/tabSlice';
+import { recordRecentRestore, renameGroup, toggleGroupLockPersisted, deleteGroup, updateGroup, moveTabPersisted } from '@/store/slices/tabSlice';
 import { DraggableTab } from '@/components/dnd/DraggableTab';
 import { TabGroup as TabGroupType, Tab } from '@/types/tab';
 import { shouldAutoDeleteAfterTabRemoval } from '@/utils/tabGroupUtils';
@@ -77,7 +77,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
 
   const handleNameSubmit = useCallback(() => {
     if (newName.trim() !== '') {
-      dispatch(updateGroupNameAndSync({ groupId: group.id, name: newName.trim() }));
+      dispatch(renameGroup({ groupId: group.id, name: newName.trim() }));
       setIsEditing(false);
     }
   }, [dispatch, group.id, newName]);
@@ -120,7 +120,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
   }, [confirmBeforeDelete, dispatch, group.id, group.name, group.tabs.length, showConfirm, showDeleteSuccess, showDeleteError]);
 
   const handleToggleLock = useCallback(() => {
-    dispatch(toggleGroupLockAndSync(group.id));
+    dispatch(toggleGroupLockPersisted(group.id));
   }, [dispatch, group.id]);
 
   const handleToggleFavorite = useCallback(() => {
@@ -232,7 +232,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
   }, [dispatch, group, showDeleteSuccess, showDeleteError, showRestoreSuccess, showRestoreError]);
 
   const handleMoveTab = useCallback((sourceGroupId: string, sourceIndex: number, targetGroupId: string, targetIndex: number) => {
-    dispatch(moveTabAndSync({
+    dispatch(moveTabPersisted({
       sourceGroupId,
       sourceIndex,
       targetGroupId,

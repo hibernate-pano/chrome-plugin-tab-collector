@@ -11,10 +11,6 @@ export type ProductEventName =
   | 'search_filtered'
   | 'session_favorited'
   | 'session_note_saved'
-  | 'sync_upload_started'
-  | 'sync_upload_completed'
-  | 'sync_download_started'
-  | 'sync_download_completed'
   | 'onetab_import_completed';
 
 export const trackProductEvent = async (

@@ -3,15 +3,10 @@ import { localStorageDriver, isLocalStorageAvailable } from './localStorageFallb
 import type { StorageBackend, StorageDriver } from './types';
 
 const MIGRATION_KEYS = {
-  deviceId: 'tabvaultpro_device_id',
-  legacyDeviceId: 'deviceId', // 早期版本存放在 chrome.storage.local 的键
   tabGroupPrefix: 'tabGroup_',
   tabGroups: 'tab_groups',
   legacyTabGroups: 'tabGroups', // 早期 service worker 使用的键
   userSettings: 'user_settings',
-  deletedGroups: 'deleted_tab_groups',
-  deletedTabs: 'deleted_tabs',
-  lastSyncTime: 'last_sync_time',
   migrationFlags: 'migration_flags'
 };
 
@@ -35,13 +30,9 @@ async function migrateFromLocalStorage(target: StorageDriver) {
     const key = ls.key(i);
     if (!key) continue;
     const interested =
-      key === MIGRATION_KEYS.deviceId ||
       key === MIGRATION_KEYS.tabGroups ||
       key === MIGRATION_KEYS.legacyTabGroups ||
       key === MIGRATION_KEYS.userSettings ||
-      key === MIGRATION_KEYS.deletedGroups ||
-      key === MIGRATION_KEYS.deletedTabs ||
-      key === MIGRATION_KEYS.lastSyncTime ||
       key === MIGRATION_KEYS.migrationFlags ||
       key.startsWith(MIGRATION_KEYS.tabGroupPrefix);
 
@@ -72,14 +63,9 @@ async function migrateFromChromeStorage(target: StorageDriver) {
   if (flags.chromeStorageMigrated) return;
 
   const keys = [
-    MIGRATION_KEYS.deviceId,
-    MIGRATION_KEYS.legacyDeviceId,
     MIGRATION_KEYS.tabGroups,
     MIGRATION_KEYS.legacyTabGroups,
     MIGRATION_KEYS.userSettings,
-    MIGRATION_KEYS.deletedGroups,
-    MIGRATION_KEYS.deletedTabs,
-    MIGRATION_KEYS.lastSyncTime,
     MIGRATION_KEYS.migrationFlags
   ];
 
@@ -141,4 +127,3 @@ export async function kvRemove(key: string): Promise<void> {
 export function getActiveBackend(): StorageBackend | null {
   return backend;
 }
-

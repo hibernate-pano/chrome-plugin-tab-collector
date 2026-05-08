@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TabGroup as TabGroupType } from '@/types/tab';
 import { useAppDispatch } from '@/store/hooks';
-import { updateGroupNameAndSync, deleteGroup, updateGroup, toggleGroupLockAndSync } from '@/store/slices/tabSlice';
+import { renameGroup, deleteGroup, updateGroup, toggleGroupLockPersisted } from '@/store/slices/tabSlice';
 import { SimpleDraggableTab } from './SimpleDraggableTab';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
@@ -54,7 +54,7 @@ export const SimpleDraggableTabGroup: React.FC<SimpleDraggableTabGroupProps> = (
 
   const handleSaveName = () => {
     if (groupName.trim() !== group.name) {
-      dispatch(updateGroupNameAndSync({ groupId: group.id, name: groupName.trim() }));
+      dispatch(renameGroup({ groupId: group.id, name: groupName.trim() }));
     }
     setIsEditing(false);
   };
@@ -78,7 +78,7 @@ export const SimpleDraggableTabGroup: React.FC<SimpleDraggableTabGroupProps> = (
 
   // 处理锁定/解锁标签组
   const handleToggleLock = () => {
-    dispatch(toggleGroupLockAndSync(group.id));
+    dispatch(toggleGroupLockPersisted(group.id));
   };
 
   const handleOpenAllTabs = () => {

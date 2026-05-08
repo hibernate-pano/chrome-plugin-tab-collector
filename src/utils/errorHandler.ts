@@ -29,8 +29,6 @@ export const ErrorCodes = {
   NETWORK_ERROR: 'NETWORK_ERROR',
   TIMEOUT_ERROR: 'TIMEOUT_ERROR',
 
-  // 认证错误
-  AUTH_ERROR: 'AUTH_ERROR',
   PERMISSION_DENIED: 'PERMISSION_DENIED',
 
   // 数据错误
@@ -41,14 +39,6 @@ export const ErrorCodes = {
   // 存储错误
   STORAGE_ERROR: 'STORAGE_ERROR',
   STORAGE_QUOTA_EXCEEDED: 'STORAGE_QUOTA_EXCEEDED',
-
-  // 同步错误
-  SYNC_ERROR: 'SYNC_ERROR',
-  SYNC_CONFLICT: 'SYNC_CONFLICT',
-
-  // 加密错误
-  ENCRYPTION_ERROR: 'ENCRYPTION_ERROR',
-  DECRYPTION_ERROR: 'DECRYPTION_ERROR',
 
   // 通用错误
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
@@ -61,17 +51,12 @@ export const ErrorCodes = {
 const ErrorMessages: Record<string, string> = {
   [ErrorCodes.NETWORK_ERROR]: '网络连接失败，请检查网络设置',
   [ErrorCodes.TIMEOUT_ERROR]: '操作超时，请重试',
-  [ErrorCodes.AUTH_ERROR]: '认证失败，请重新登录',
   [ErrorCodes.PERMISSION_DENIED]: '权限不足，无法执行此操作',
   [ErrorCodes.DATA_VALIDATION_ERROR]: '数据格式错误',
   [ErrorCodes.DATA_NOT_FOUND]: '未找到相关数据',
   [ErrorCodes.DATA_CORRUPTION]: '数据已损坏',
   [ErrorCodes.STORAGE_ERROR]: '存储操作失败',
   [ErrorCodes.STORAGE_QUOTA_EXCEEDED]: '存储空间不足',
-  [ErrorCodes.SYNC_ERROR]: '同步失败，请稍后重试',
-  [ErrorCodes.SYNC_CONFLICT]: '数据冲突，请手动解决',
-  [ErrorCodes.ENCRYPTION_ERROR]: '数据加密失败',
-  [ErrorCodes.DECRYPTION_ERROR]: '数据解密失败',
   [ErrorCodes.UNKNOWN_ERROR]: '发生未知错误',
   [ErrorCodes.OPERATION_FAILED]: '操作失败，请重试'
 };
@@ -202,7 +187,7 @@ export class ErrorHandler {
       'password', 'token', 'key', 'secret', 'auth', 'credential',
       'email', 'phone', 'address', 'ssn', 'credit', 'card',
       'api_key', 'access_token', 'refresh_token', 'session_id',
-      'user_id', 'device_id', 'supabase', 'anon_key'
+      'anon_key'
     ];
 
     const lowerFieldName = fieldName.toLowerCase();

@@ -136,7 +136,7 @@ export const ReadyStep: React.FC = () => (
     <p className="onboarding-description">
       现在开始保存、搜索、恢复你的工作会话
       <br />
-      需要跨设备时，再按需手动同步
+      所有数据都会保存在当前浏览器里
     </p>
   </div>
 );

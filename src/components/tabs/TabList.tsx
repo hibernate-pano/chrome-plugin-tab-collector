@@ -1,6 +1,6 @@
 import React, { useEffect, lazy } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { clearRecentRestores, deleteGroup, loadGroups, loadRecentRestores, moveGroupAndSync, recordRecentRestore } from '@/store/slices/tabSlice';
+import { clearRecentRestores, deleteGroup, loadGroups, loadRecentRestores, moveGroupPersisted, recordRecentRestore } from '@/store/slices/tabSlice';
 import { invalidateGroupsCache } from '@/utils/storage';
 import { runMigrations } from '@/utils/migrationUtils';
 import { DraggableTabGroup } from '@/components/dnd/DraggableTabGroup';
@@ -377,7 +377,7 @@ export const TabList: React.FC<TabListProps> = ({ searchQuery }) => {
                       group={group}
                       index={filteredGroups.findIndex(item => item.id === group.id)}
                       moveGroup={(dragIndex, hoverIndex) => {
-                        dispatch(moveGroupAndSync({ dragIndex, hoverIndex }));
+                        dispatch(moveGroupPersisted({ dragIndex, hoverIndex }));
                       }}
                     />
                   ))}
@@ -392,7 +392,7 @@ export const TabList: React.FC<TabListProps> = ({ searchQuery }) => {
                       group={group}
                       index={filteredGroups.findIndex(item => item.id === group.id)}
                       moveGroup={(dragIndex, hoverIndex) => {
-                        dispatch(moveGroupAndSync({ dragIndex, hoverIndex }));
+                        dispatch(moveGroupPersisted({ dragIndex, hoverIndex }));
                       }}
                     />
                   ))}
@@ -406,7 +406,7 @@ export const TabList: React.FC<TabListProps> = ({ searchQuery }) => {
                   group={group}
                   index={index}
                   moveGroup={(dragIndex, hoverIndex) => {
-                    dispatch(moveGroupAndSync({ dragIndex, hoverIndex }));
+                    dispatch(moveGroupPersisted({ dragIndex, hoverIndex }));
                   }}
                 />
               ))}

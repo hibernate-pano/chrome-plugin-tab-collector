@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loadGroups, moveTabAndSync } from '@/store/slices/tabSlice';
+import { loadGroups, moveTabPersisted } from '@/store/slices/tabSlice';
 import { SearchResultList } from '@/components/search/SearchResultList';
 // No need to import TabGroup type as we're not using it directly
 import { SortableTabGroup } from '@/components/dnd/SortableTabGroup';
@@ -240,7 +240,7 @@ export const TabListDndKit: React.FC<TabListProps> = ({ searchQuery }) => {
       try {
         // 在拖动结束时执行最终更新
         dispatch(
-          moveTabAndSync({
+          moveTabPersisted({
             sourceGroupId,
             sourceIndex,
             targetGroupId,

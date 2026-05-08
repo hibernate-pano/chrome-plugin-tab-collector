@@ -10,7 +10,6 @@ import { cleanDuplicateTabs } from '@/store/slices/tabSlice';
 import { HeaderDropdown } from './HeaderDropdown';
 import { useToast } from '@/contexts/ToastContext';
 import { TabCounter } from './TabCounter';
-import SyncButton from '@/components/sync/SyncButton';
 import { SimpleThemeToggle } from './SimpleThemeToggle';
 import { LayoutMode } from '@/types/tab';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
@@ -276,9 +275,6 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
             {/* 主题切换 */}
             <SimpleThemeToggle />
-
-            {/* 同步按钮 */}
-            <SyncButton />
 
             {/* 保存按钮 */}
             <Tooltip content="保存当前窗口为会话" position="bottom">

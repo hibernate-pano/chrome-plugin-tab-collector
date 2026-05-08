@@ -641,14 +641,6 @@ html[data-theme="prism"] .prism-flow {
     animation: prism-flow 4s ease infinite;
 }
 
-/* ==========================================
-   棱镜主题 - 同步按钮
-   ========================================== */
-html[data-theme="prism"] .sync-button-syncing {
-    background: var(--prism-gradient);
-    background-size: 200% 200%;
-    animation: prism-flow 2s ease infinite;
-}
 
 /* ==========================================
    棱镜主题 - 批量操作工具栏

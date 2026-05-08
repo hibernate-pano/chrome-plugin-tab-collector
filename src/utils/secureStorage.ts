@@ -8,11 +8,8 @@ const ENCRYPTION_PREFIX = 'SECURE_V1:';
 
 // 敏感数据的存储键
 const SENSITIVE_KEYS = [
-  'deviceId',
   'migration_flags',
-  'auth_cache',
-  'user_preferences',
-  'sync_tokens'
+  'user_preferences'
 ];
 
 /**

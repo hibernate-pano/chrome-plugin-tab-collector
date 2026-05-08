@@ -406,15 +406,6 @@ html[data-theme="aurora"] .aurora-flow {
 }
 
 /* ==========================================
-   极光主题 - 同步按钮特殊样式
-   ========================================== */
-html[data-theme="aurora"] .sync-button-syncing {
-  background: var(--aurora-gradient);
-  background-size: 200% 200%;
-  animation: aurora-flow 2s ease infinite;
-}
-
-/* ==========================================
    极光主题 - 标签组计数徽章
    ========================================== */
 html[data-theme="aurora"] .tab-group-count {
@@ -530,4 +521,3 @@ html[data-theme="aurora"] .tab-group-time {
 html[data-theme="aurora"] .empty-state-default-icon {
   color: var(--color-text-muted);
 }
-

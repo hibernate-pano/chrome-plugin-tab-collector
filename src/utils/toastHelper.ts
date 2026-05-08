@@ -15,8 +15,6 @@ export type NotificationType =
   | 'restore-error'
   | 'delete-success'
   | 'delete-error'
-  | 'sync-success'
-  | 'sync-error'
   | 'pinned-info';
 
 /**
@@ -94,22 +92,6 @@ export const getNotificationConfig = (
         duration: 5000
       };
 
-    // 同步操作
-    case 'sync-success':
-      return {
-        title: '同步成功',
-        message: params?.message || '手动同步已完成',
-        type: 'success',
-        duration: 3000
-      };
-    case 'sync-error':
-      return {
-        title: '同步失败',
-        message: params?.error || '数据同步失败',
-        type: 'error',
-        duration: 5000
-      };
-
     // 固定标签页信息
     case 'pinned-info':
       return {
@@ -161,8 +143,6 @@ export const useEnhancedToast = () => {
       showRestoreError: noop,
       showDeleteSuccess: noop,
       showDeleteError: noop,
-      showSyncSuccess: noop,
-      showSyncError: noop,
       showPinnedInfo: noop,
     };
   }
@@ -185,8 +165,6 @@ export const useEnhancedToast = () => {
     showRestoreError: (error: string) => showNotification('restore-error', { error }),
     showDeleteSuccess: (message: string) => showNotification('delete-success', { message }),
     showDeleteError: (error: string) => showNotification('delete-error', { error }),
-    showSyncSuccess: (message: string) => showNotification('sync-success', { message }),
-    showSyncError: (error: string) => showNotification('sync-error', { error }),
     showPinnedInfo: (message: string) => showNotification('pinned-info', { message }),
   };
 };

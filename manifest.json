@@ -4,7 +4,7 @@
   "version": "1.11.5",
   "description": "Save browser work sessions and restore them later",
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src 'none'; base-uri 'self'; form-action 'self';"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; base-uri 'self'; form-action 'self';"
   },
   "permissions": [
     "tabs",
@@ -13,9 +13,7 @@
     "notifications",
     "contextMenus"
   ],
-  "host_permissions": [
-    "https://*.supabase.co/*"
-  ],
+  "host_permissions": [],
   "action": {
     "default_icon": "icons/icon16.png",
     "default_title": "TabVault Pro - 工作会话保险箱"
@@ -27,14 +25,6 @@
       ],
       "matches": [
         "chrome-extension://*/*"
-      ]
-    },
-    {
-      "resources": [
-        "src/auth/*.html"
-      ],
-      "matches": [
-        "https://*.supabase.co/*"
       ]
     }
   ],

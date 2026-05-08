@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TabGroup as TabGroupType } from '@/types/tab';
 import { useAppDispatch } from '@/store/hooks';
-import { updateGroupNameAndSync, deleteGroup, updateGroup } from '@/store/slices/tabSlice';
+import { renameGroup, deleteGroup, updateGroup } from '@/store/slices/tabSlice';
 import { SortableTab } from './SortableTab';
 import { shouldAutoDeleteAfterTabRemoval } from '@/utils/tabGroupUtils';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -77,7 +77,7 @@ export const SortableTabGroup: React.FC<SortableTabGroupProps> = ({ group, index
 
     if (groupName.trim() !== group.name) {
       try {
-        dispatch(updateGroupNameAndSync({ groupId: group.id, name: groupName.trim() }));
+        dispatch(renameGroup({ groupId: group.id, name: groupName.trim() }));
       } catch (error) {
         console.error('更新标签组名称失败:', error);
       }

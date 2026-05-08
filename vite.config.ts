@@ -69,7 +69,6 @@ export default defineConfig(({ mode }) => {
         input: {
           'src/popup/index': resolve(__dirname, 'src/popup/index.html'),
           'popup': resolve(__dirname, 'popup.html'),
-          'confirm': resolve(__dirname, 'src/auth/confirm.html'),
           'service-worker': resolve(__dirname, 'src/service-worker.ts')
         },
         output: {
@@ -84,10 +83,6 @@ export default defineConfig(({ mode }) => {
             // Redux 相关库打包到一起
             if (id.includes('node_modules/@reduxjs/toolkit')) {
               return 'redux-vendor';
-            }
-            // Supabase 相关库打包到一起
-            if (id.includes('node_modules/@supabase/supabase-js')) {
-              return 'supabase-vendor';
             }
             // 工具函数打包到一起
             if (id.includes('src/utils/')) {

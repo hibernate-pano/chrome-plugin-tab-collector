@@ -12,8 +12,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "type-check": "tsc --noEmit",
-    "validate": "node scripts/validate-extension.mjs && pnpm type-check && pnpm lint && pnpm build",
-    "test:supabase-smoke": "node scripts/supabase-smoke-test.mjs"
+    "validate": "node scripts/validate-extension.mjs && pnpm type-check && pnpm lint && pnpm build"
   },
   "keywords": [
     "chrome-extension",
@@ -29,7 +28,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@reduxjs/toolkit": "^2.2.1",
-    "@supabase/supabase-js": "^2.49.4",
     "@types/lodash": "^4.17.16",
     "@types/react-window": "^1.8.8",
     "clsx": "^2.1.1",

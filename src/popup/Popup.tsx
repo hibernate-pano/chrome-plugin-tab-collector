@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import { useAppSelector } from '@/store/hooks';
 import { store } from '@/store';
 import { loadSettings } from '@/store/slices/settingsSlice';
 import { loadGroups } from '@/store/slices/tabSlice';
@@ -8,21 +7,7 @@ import Layout from '@/components/layout/Layout';
 import Header from '@/components/layout/Header';
 import TabList from '@/components/tabs/TabList';
 import { TabListDndKit } from '@/components/tabs/TabListDndKit';
-import { LoadingOverlay } from '@/components/common/LoadingOverlay';
 import { useToast } from '@/contexts/ToastContext';
-// DndProvider is handled internally by TabListDndKit
-
-const SyncLoadingOverlay: React.FC = () => {
-  const { syncStatus, backgroundSync } = useAppSelector(state => state.tabs);
-  const isSyncing = syncStatus === 'syncing';
-
-  return (
-    <LoadingOverlay
-      isVisible={isSyncing && !backgroundSync}
-      message="正在手动同步..."
-    />
-  );
-};
 
 const PopupContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,19 +17,14 @@ const PopupContent: React.FC = () => {
     store.dispatch(loadSettings());
     store.dispatch(loadGroups());
 
-    // 解析URL参数
     const urlParams = new URLSearchParams(window.location.search);
     const savedTabs = urlParams.get('saved');
     if (savedTabs) {
       const tabs = JSON.parse(decodeURIComponent(savedTabs));
-      // 显示保存成功的提示
-      const message = `已保存 ${tabs.length} 个标签页`;
-      console.log(message);
-      showToast(message, 'success');
+      showToast(`已保存 ${tabs.length} 个标签页`, 'success');
     }
   }, [showToast]);
 
-  // 使用新的 dnd-kit 实现
   const useDndKit = true;
 
   return (
@@ -62,7 +42,6 @@ const PopupContent: React.FC = () => {
 const Popup: React.FC = () => {
   return (
     <Provider store={store}>
-      <SyncLoadingOverlay />
       <PopupContent />
     </Provider>
   );

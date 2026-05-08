@@ -1,4 +1,4 @@
-import { TabGroup, UserSettings, Tab, LayoutMode, ThemeStyle, RecentRestoreEntry } from '@/types/tab';
+import { TabGroup, UserSettings, LayoutMode, ThemeStyle, RecentRestoreEntry } from '@/types/tab';
 import { parseOneTabFormat, formatToOneTabFormat } from './oneTabFormatParser';
 import { secureStorage } from './secureStorage';
 import { kvGet, kvSet, kvRemove } from '@/storage/storageAdapter';
@@ -22,9 +22,6 @@ const STORAGE_KEYS = {
   VERSION: 'storage_version',
   GROUPS: 'tab_groups',
   SETTINGS: 'user_settings',
-  DELETED_GROUPS: 'deleted_tab_groups',
-  DELETED_TABS: 'deleted_tabs',
-  LAST_SYNC_TIME: 'last_sync_time',
   RECENT_RESTORES: 'recent_restores',
   PRODUCT_EVENTS: 'product_events',
   MIGRATION_FLAGS: 'migration_flags'
@@ -79,15 +76,11 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showFavicons: true,
   showTabCount: true,
   confirmBeforeDelete: true,
-  allowDuplicateTabs: false, // 默认不允许重复标签页
-  syncEnabled: true, // 默认启用同步
-  layoutMode: 'single' as LayoutMode, // 默认使用单栏布局
-  showNotifications: false, // 默认关闭通知
-  syncStrategy: 'newest', // 默认使用最新版本
-  deleteStrategy: 'everywhere', // 默认在所有设备上删除
-  themeMode: 'auto', // 默认使用自动模式（跟随系统）
-  themeStyle: 'legacy', // 默认使用原始主题
-  // 默认不收集固定标签页（更保守）
+  allowDuplicateTabs: false,
+  layoutMode: 'single' as LayoutMode,
+  showNotifications: false,
+  themeMode: 'auto',
+  themeStyle: 'legacy',
   collectPinnedTabs: false,
 };
 
@@ -253,106 +246,6 @@ class ChromeStorage {
     }
   }
 
-  // 新增：获取已删除的标签组
-  async getDeletedGroups(): Promise<TabGroup[]> {
-    try {
-      await this.ensureVersion();
-      const groups = await kvGet<unknown>(STORAGE_KEYS.DELETED_GROUPS);
-      return Array.isArray(groups) ? (groups as TabGroup[]) : [];
-    } catch (error) {
-      console.error('获取已删除标签组失败:', error);
-      return [];
-    }
-  }
-
-  // 新增：设置已删除的标签组
-  async setDeletedGroups(groups: TabGroup[]): Promise<void> {
-    try {
-      await this.ensureVersion();
-      await kvSet(STORAGE_KEYS.DELETED_GROUPS, groups);
-    } catch (error) {
-      console.error('设置已删除标签组失败:', error);
-    }
-  }
-
-  // 新增：获取已删除的标签页
-  async getDeletedTabs(): Promise<Tab[]> {
-    try {
-      await this.ensureVersion();
-      const tabs = await kvGet<unknown>(STORAGE_KEYS.DELETED_TABS);
-      return Array.isArray(tabs) ? (tabs as Tab[]) : [];
-    } catch (error) {
-      console.error('获取已删除标签页失败:', error);
-      return [];
-    }
-  }
-
-  // 新增：设置已删除的标签页
-  async setDeletedTabs(tabs: Tab[]): Promise<void> {
-    try {
-      await this.ensureVersion();
-      await kvSet(STORAGE_KEYS.DELETED_TABS, tabs);
-    } catch (error) {
-      console.error('设置已删除标签页失败:', error);
-    }
-  }
-
-  // 新增：清理过期的已删除标签组
-  async cleanupDeletedGroups(maxAgeInDays: number = 30): Promise<void> {
-    try {
-      const deletedGroups = await this.getDeletedGroups();
-      const now = new Date().getTime();
-      const maxAgeMs = maxAgeInDays * 24 * 60 * 60 * 1000;
-
-      // 过滤出未过期的已删除标签组
-      const validGroups = deletedGroups.filter(group => {
-        const updatedAt = new Date(group.updatedAt).getTime();
-        return (now - updatedAt) < maxAgeMs;
-      });
-
-      // 如果有过期的标签组，更新存储
-      if (validGroups.length !== deletedGroups.length) {
-        await this.setDeletedGroups(validGroups);
-        console.log(`清理了 ${deletedGroups.length - validGroups.length} 个过期的已删除标签组`);
-      }
-
-      // 同时清理过期的已删除标签页
-      const deletedTabs = await this.getDeletedTabs();
-      const validTabs = deletedTabs.filter(tab => {
-        const lastAccessed = new Date(tab.lastAccessed).getTime();
-        return (now - lastAccessed) < maxAgeMs;
-      });
-
-      if (validTabs.length !== deletedTabs.length) {
-        await this.setDeletedTabs(validTabs);
-        console.log(`清理了 ${deletedTabs.length - validTabs.length} 个过期的已删除标签页`);
-      }
-    } catch (error) {
-      console.error('清理已删除数据失败:', error);
-    }
-  }
-
-  // 获取最后同步时间
-  async getLastSyncTime(): Promise<string | null> {
-    try {
-      await this.ensureVersion();
-      return (await kvGet<string>(STORAGE_KEYS.LAST_SYNC_TIME)) || null;
-    } catch (error) {
-      console.error('获取最后同步时间失败:', error);
-      return null;
-    }
-  }
-
-  // 设置最后同步时间
-  async setLastSyncTime(time: string): Promise<void> {
-    try {
-      await this.ensureVersion();
-      await kvSet(STORAGE_KEYS.LAST_SYNC_TIME, time);
-    } catch (error) {
-      console.error('设置最后同步时间失败:', error);
-    }
-  }
-
   async getRecentRestores(): Promise<RecentRestoreEntry[]> {
     try {
       await this.ensureVersion();
@@ -499,9 +392,6 @@ class ChromeStorage {
         STORAGE_KEYS.VERSION,
         STORAGE_KEYS.GROUPS,
         STORAGE_KEYS.SETTINGS,
-        STORAGE_KEYS.DELETED_GROUPS,
-        STORAGE_KEYS.DELETED_TABS,
-        STORAGE_KEYS.LAST_SYNC_TIME,
         STORAGE_KEYS.RECENT_RESTORES,
         STORAGE_KEYS.PRODUCT_EVENTS,
         STORAGE_KEYS.MIGRATION_FLAGS

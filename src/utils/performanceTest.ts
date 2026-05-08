@@ -92,7 +92,6 @@ export function generateTestData(groupCount: number, tabsPerGroup: number) {
         favicon: `https://example.com/favicon-${j}.ico`,
         createdAt: new Date().toISOString(),
         lastAccessed: new Date().toISOString(),
-        lastSyncedAt: new Date().toISOString(),
         pinned: false,
       });
     }
@@ -103,9 +102,7 @@ export function generateTestData(groupCount: number, tabsPerGroup: number) {
       tabs,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      lastSyncedAt: new Date().toISOString(),
       isLocked: i % 5 === 0, // 每5个标签组有1个锁定
-      syncStatus: 'synced'
     });
   }
   

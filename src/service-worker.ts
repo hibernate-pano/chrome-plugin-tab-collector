@@ -52,7 +52,7 @@ const showNotification = async (message: string, title = 'TabVault Pro'): Promis
   });
 };
 
-console.log('Service Worker: 已简化同步逻辑，只保留手动同步功能');
+console.log('Service Worker: 本地模式已启用');
 
 // 初始化右键菜单
 async function setupContextMenus() {
