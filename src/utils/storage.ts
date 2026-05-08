@@ -1,8 +1,12 @@
-import { TabGroup, UserSettings, LayoutMode, ThemeStyle, RecentRestoreEntry } from '@/types/tab';
+import { TabGroup, UserSettings, LayoutMode } from '@/types/tab';
 import { parseOneTabFormat, formatToOneTabFormat } from './oneTabFormatParser';
-import { secureStorage } from './secureStorage';
 import { kvGet, kvSet, kvRemove } from '@/storage/storageAdapter';
 import { cacheManager, cachedAsyncFn, debounceAsync } from './performance';
+import {
+  normalizeStoredSettings,
+  validateThemeMode,
+  validateThemeStyle,
+} from './settingsNormalization';
 
 // 缓存 TTL 配置常量
 export const CACHE_TTL = {
@@ -22,53 +26,11 @@ const STORAGE_KEYS = {
   VERSION: 'storage_version',
   GROUPS: 'tab_groups',
   SETTINGS: 'user_settings',
-  RECENT_RESTORES: 'recent_restores',
   PRODUCT_EVENTS: 'product_events',
   MIGRATION_FLAGS: 'migration_flags'
 };
 
 const STORAGE_VERSION = 2;
-
-// 有效的主题风格值
-const VALID_THEME_STYLES: ThemeStyle[] = [
-  'legacy',
-  'classic',
-  'aurora',
-  'creamy',
-  'pink',
-  'mint',
-  'cyberpunk',
-  'prism',
-];
-
-// 有效的主题模式值
-const VALID_THEME_MODES: Array<'light' | 'dark' | 'auto'> = ['light', 'dark', 'auto'];
-
-/**
- * 验证主题风格值
- * @param value 待验证的值
- * @returns 有效的主题风格值，无效时返回默认值 'legacy'
- */
-export function validateThemeStyle(value: unknown): ThemeStyle {
-  if (typeof value === 'string' && VALID_THEME_STYLES.includes(value as ThemeStyle)) {
-    return value as ThemeStyle;
-  }
-  console.warn('无效的主题风格值，使用默认值:', value);
-  return 'legacy';
-}
-
-/**
- * 验证主题模式值
- * @param value 待验证的值
- * @returns 有效的主题模式值，无效时返回默认值 'auto'
- */
-export function validateThemeMode(value: unknown): 'light' | 'dark' | 'auto' {
-  if (typeof value === 'string' && VALID_THEME_MODES.includes(value as 'light' | 'dark' | 'auto')) {
-    return value as 'light' | 'dark' | 'auto';
-  }
-  console.warn('无效的明暗模式值，使用默认值:', value);
-  return 'auto';
-}
 
 // 默认设置
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -84,11 +46,6 @@ export const DEFAULT_SETTINGS: UserSettings = {
   collectPinnedTabs: false,
 };
 
-// 兼容历史字段
-type LegacySettings = Partial<UserSettings> & {
-  useDoubleColumnLayout?: boolean;
-};
-
 // 导出数据的格式
 interface ExportData {
   version: string;
@@ -96,7 +53,6 @@ interface ExportData {
   data: {
     groups: TabGroup[];
     settings: UserSettings;
-    recentRestores?: RecentRestoreEntry[];
   };
 }
 
@@ -156,43 +112,14 @@ class ChromeStorage {
     try {
       return await cachedAsyncFn('storage', 'settings', async () => {
         await this.ensureVersion();
-        const rawSettings = (await kvGet<LegacySettings | unknown>(STORAGE_KEYS.SETTINGS)) || {};
-        const normalizedSettings =
-          rawSettings && typeof rawSettings === 'object' ? (rawSettings as LegacySettings) : {};
+        const rawSettings = await kvGet<unknown>(STORAGE_KEYS.SETTINGS);
+        const { settings, needsRewrite } = normalizeStoredSettings(rawSettings, DEFAULT_SETTINGS);
 
-        // 向后兼容性处理：将旧的useDoubleColumnLayout转换为新的layoutMode
-        if (
-          'useDoubleColumnLayout' in normalizedSettings &&
-          normalizedSettings.useDoubleColumnLayout !== undefined &&
-          normalizedSettings.layoutMode === undefined
-        ) {
-          normalizedSettings.layoutMode = normalizedSettings.useDoubleColumnLayout ? 'double' : 'single';
-          delete normalizedSettings.useDoubleColumnLayout;
-          await this.setSettings({ ...DEFAULT_SETTINGS, ...normalizedSettings });
+        if (needsRewrite) {
+          await this.setSettings(settings);
         }
 
-        // 验证并修正主题相关设置
-        const validatedThemeStyle = validateThemeStyle(normalizedSettings.themeStyle);
-        const validatedThemeMode = validateThemeMode(normalizedSettings.themeMode);
-
-        // 如果验证后的值与原值不同，说明存储中有无效值，需要更新
-        const needsUpdate =
-          normalizedSettings.themeStyle !== validatedThemeStyle ||
-          normalizedSettings.themeMode !== validatedThemeMode;
-
-        const mergedSettings: UserSettings = {
-          ...DEFAULT_SETTINGS,
-          ...normalizedSettings,
-          themeStyle: validatedThemeStyle,
-          themeMode: validatedThemeMode,
-        };
-
-        // 如果有无效值被修正，保存修正后的设置
-        if (needsUpdate) {
-          await this.setSettings(mergedSettings);
-        }
-
-        return mergedSettings;
+        return settings;
       }, CACHE_TTL.SETTINGS);
     } catch (error) {
       console.error('获取设置失败:', error);
@@ -246,27 +173,6 @@ class ChromeStorage {
     }
   }
 
-  async getRecentRestores(): Promise<RecentRestoreEntry[]> {
-    try {
-      await this.ensureVersion();
-      const restores = await kvGet<unknown>(STORAGE_KEYS.RECENT_RESTORES);
-      return Array.isArray(restores) ? (restores as RecentRestoreEntry[]) : [];
-    } catch (error) {
-      console.error('获取最近恢复记录失败:', error);
-      return [];
-    }
-  }
-
-  async setRecentRestores(restores: RecentRestoreEntry[]): Promise<void> {
-    try {
-      await this.ensureVersion();
-      await kvSet(STORAGE_KEYS.RECENT_RESTORES, restores);
-    } catch (error) {
-      console.error('保存最近恢复记录失败:', error);
-      throw error;
-    }
-  }
-
   async getProductEvents(): Promise<Array<Record<string, unknown>>> {
     try {
       await this.ensureVersion();
@@ -291,7 +197,6 @@ class ChromeStorage {
   async exportData(): Promise<ExportData> {
     const groups = await this.getGroups();
     const settings = await this.getSettings();
-    const recentRestores = await this.getRecentRestores();
 
     return {
       version: '1.0.0',
@@ -299,7 +204,6 @@ class ChromeStorage {
       data: {
         groups,
         settings,
-        recentRestores,
       }
     };
   }
@@ -338,11 +242,6 @@ class ChromeStorage {
           ...data.data.settings
         });
       }
-
-      if (Array.isArray(data.data.recentRestores)) {
-        await this.setRecentRestores(data.data.recentRestores);
-      }
-
       return true;
     } catch (error) {
       console.error('导入数据失败:', error);
@@ -392,7 +291,6 @@ class ChromeStorage {
         STORAGE_KEYS.VERSION,
         STORAGE_KEYS.GROUPS,
         STORAGE_KEYS.SETTINGS,
-        STORAGE_KEYS.RECENT_RESTORES,
         STORAGE_KEYS.PRODUCT_EVENTS,
         STORAGE_KEYS.MIGRATION_FLAGS
       ];
@@ -405,13 +303,23 @@ class ChromeStorage {
   // 迁移标志相关方法
   async getMigrationFlags(): Promise<Record<string, boolean>> {
     try {
-      // 优先使用加密存储
-      const flags = await secureStorage.get<Record<string, boolean>>(STORAGE_KEYS.MIGRATION_FLAGS);
-      if (flags) return flags;
-
-      // 降级到普通存储（向后兼容）
       const result = await kvGet<Record<string, boolean>>(STORAGE_KEYS.MIGRATION_FLAGS);
-      return result || {};
+      if (result) {
+        return result;
+      }
+
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        const legacyResult = await chrome.storage.local.get([STORAGE_KEYS.MIGRATION_FLAGS]);
+        const legacyFlags = legacyResult[STORAGE_KEYS.MIGRATION_FLAGS];
+
+        if (legacyFlags && typeof legacyFlags === 'object') {
+          await kvSet(STORAGE_KEYS.MIGRATION_FLAGS, legacyFlags as Record<string, boolean>);
+          await chrome.storage.local.remove(STORAGE_KEYS.MIGRATION_FLAGS);
+          return legacyFlags as Record<string, boolean>;
+        }
+      }
+
+      return {};
     } catch (error) {
       console.error('获取迁移标志失败:', error);
       return {};
@@ -422,19 +330,9 @@ class ChromeStorage {
     try {
       const flags = await this.getMigrationFlags();
       flags[key] = value;
-
-      // 使用加密存储
-      await secureStorage.set(STORAGE_KEYS.MIGRATION_FLAGS, flags);
+      await kvSet(STORAGE_KEYS.MIGRATION_FLAGS, flags);
     } catch (error) {
       console.error('设置迁移标志失败:', error);
-      // 降级到普通存储
-      try {
-        const flags = await this.getMigrationFlags();
-        flags[key] = value;
-        await kvSet(STORAGE_KEYS.MIGRATION_FLAGS, flags);
-      } catch (fallbackError) {
-        console.error('降级存储也失败:', fallbackError);
-      }
     }
   }
 }

@@ -10,7 +10,6 @@ Tag Collector is a local-first Chrome extension for saving tab sessions, finding
 - Search saved sessions by session name, notes, tab title, and URL
 - Rename, lock, favorite, annotate, and delete sessions
 - Restore an entire session in a new window
-- Reopen items from recent restore history
 - Clean duplicate tabs and remove empty sessions
 - Import and export JSON backups
 - Import and export OneTab text format
@@ -61,7 +60,6 @@ Then open `chrome://extensions`, enable Developer mode, and load the `dist` dire
 ### Find a saved session
 
 - Use the search box to search by session name, note, tab title, or URL
-- Browse recent restore history from the main view
 - Switch layout mode if you prefer a different session list density
 
 ### Restore a session

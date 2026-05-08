@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, createSelector, nanoid } from '@reduxjs/toolkit';
-import { RecentRestoreEntry, TabGroup, TabState } from '@/types/tab';
+import { TabGroup, TabState } from '@/types/tab';
 import { storage } from '@/utils/storage';
 import { shouldAutoDeleteAfterTabRemoval } from '@/utils/tabGroupUtils';
 import { updateDisplayOrder, updateGroupWithVersion } from '@/utils/versionHelper';
@@ -7,7 +7,6 @@ import { trackProductEvent } from '@/utils/productEvents';
 
 const initialState: TabState = {
   groups: [],
-  recentRestores: [],
   activeGroupId: null,
   isLoading: false,
   error: null,
@@ -17,37 +16,6 @@ const initialState: TabState = {
 export const loadGroups = createAsyncThunk('tabs/loadGroups', async () => {
   const groups = await storage.getGroups();
   return groups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-});
-
-export const loadRecentRestores = createAsyncThunk('tabs/loadRecentRestores', async () => {
-  const restores = await storage.getRecentRestores();
-  return restores.sort(
-    (left, right) => new Date(right.restoredAt).getTime() - new Date(left.restoredAt).getTime()
-  );
-});
-
-export const recordRecentRestore = createAsyncThunk(
-  'tabs/recordRecentRestore',
-  async (entry: RecentRestoreEntry) => {
-    const currentEntries = await storage.getRecentRestores();
-    const existingEntry = currentEntries.find(item => item.sessionId === entry.sessionId);
-    const nextEntry = existingEntry
-      ? { ...existingEntry, ...entry, restoredAt: new Date().toISOString() }
-      : entry;
-
-    const nextEntries = [
-      nextEntry,
-      ...currentEntries.filter(item => item.sessionId !== entry.sessionId),
-    ].slice(0, 3);
-
-    await storage.setRecentRestores(nextEntries);
-    return nextEntries;
-  }
-);
-
-export const clearRecentRestores = createAsyncThunk('tabs/clearRecentRestores', async () => {
-  await storage.setRecentRestores([]);
-  return [];
 });
 
 export const saveGroup = createAsyncThunk('tabs/saveGroup', async (group: TabGroup) => {
@@ -462,15 +430,6 @@ export const tabSlice = createSlice({
       .addCase(loadGroups.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || '加载会话失败';
-      })
-      .addCase(loadRecentRestores.fulfilled, (state, action) => {
-        state.recentRestores = action.payload;
-      })
-      .addCase(recordRecentRestore.fulfilled, (state, action) => {
-        state.recentRestores = action.payload;
-      })
-      .addCase(clearRecentRestores.fulfilled, (state, action) => {
-        state.recentRestores = action.payload;
       })
       .addCase(saveGroup.fulfilled, (state, action) => {
         state.groups.unshift(action.payload);

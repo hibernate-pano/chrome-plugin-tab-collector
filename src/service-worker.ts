@@ -1,47 +1,8 @@
 import { tabManager } from '@/background/TabManager';
-import { migrateToV2 } from '@/utils/migrationHelper';
+import { ensureLocalDataReady } from '@/utils/appBootstrap';
 
 // Chrome 扩展的 Service Worker
 // 为了避免模块导入问题，早期版本内联了存储逻辑；现统一使用 utils/storage 以与前端页面共享同一数据源（IndexedDB）
-
-// Service Worker启动日志
-console.log('=== Tag Collector Service Worker started ===');
-console.log('版本:', chrome.runtime.getManifest().version);
-console.log('启动时间:', new Date().toISOString());
-console.log('Chrome APIs 可用性检查:');
-console.log('- chrome.tabs:', !!chrome.tabs);
-console.log('- chrome.runtime:', !!chrome.runtime);
-console.log('- chrome.action:', !!chrome.action);
-console.log('- chrome.storage:', !!chrome.storage);
-console.log('=====================================');
-
-// 迁移旧的存储键到新的统一键名
-async function migrateStorageKeys() {
-  try {
-    const { tabGroups } = await chrome.storage.local.get(['tabGroups']);
-    const { tab_groups } = await chrome.storage.local.get(['tab_groups']);
-
-    // 如果存在旧键且新键不存在或为空，则迁移
-    if (Array.isArray(tabGroups) && (!Array.isArray(tab_groups) || tab_groups.length === 0)) {
-      await chrome.storage.local.set({ tab_groups: tabGroups });
-      // 迁移完成后可选择清理旧键（可选）
-      await chrome.storage.local.remove('tabGroups');
-      console.log('已将旧键 tabGroups 迁移为 tab_groups');
-    }
-  } catch (error) {
-    console.warn('迁移存储键失败（可忽略）:', error);
-  }
-}
-
-async function runMigrations() {
-  await migrateStorageKeys();
-
-  try {
-    await migrateToV2();
-  } catch (error) {
-    console.error('[Migration] 数据迁移失败:', error);
-  }
-}
 
 const showNotification = async (message: string, title = 'Tag Collector'): Promise<void> => {
   await tabManager.showNotification({
@@ -51,8 +12,6 @@ const showNotification = async (message: string, title = 'Tag Collector'): Promi
     message,
   });
 };
-
-console.log('Service Worker: 本地模式已启用');
 
 // 初始化右键菜单
 async function setupContextMenus() {
@@ -105,8 +64,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     console.log('Service Worker: 已记录版本更新事件, 旧版本:', details.previousVersion);
   }
 
-  // 迁移旧的存储键 + 数据版本
-  await runMigrations();
+  try {
+    await ensureLocalDataReady();
+  } catch (error) {
+    console.error('初始化本地数据失败:', error);
+  }
 
   // 创建右键菜单
   await setupContextMenus();
@@ -114,9 +76,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 // 浏览器启动时
 chrome.runtime.onStartup.addListener(async () => {
-  console.log('Service Worker: 浏览器已启动');
-  // 尝试进行一次迁移，确保老用户数据可见
-  await runMigrations();
+  try {
+    await ensureLocalDataReady();
+  } catch (error) {
+    console.error('浏览器启动时初始化本地数据失败:', error);
+  }
 
   // 确保右键菜单存在
   await setupContextMenus();
@@ -225,8 +189,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
 // 简化的消息处理
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Service Worker 收到消息:', message.type);
-
   // 基本验证
   if (!message || !message.type) {
     sendResponse({ success: false, error: '无效消息' });

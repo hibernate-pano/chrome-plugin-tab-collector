@@ -3,20 +3,13 @@ import { ToastProvider } from '@/contexts/ToastContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { MainApp } from './MainApp';
-import { getActiveBackend, initStorage } from '@/storage/storageAdapter';
+import { ensureLocalDataReady } from '@/utils/appBootstrap';
 
 export const AppContainer: React.FC = () => {
   useEffect(() => {
-    initStorage()
-      .then(() => {
-        const backend = getActiveBackend();
-        if (backend) {
-          console.log(`[storage] active backend: ${backend}`);
-        }
-      })
-      .catch(error => {
-        console.error('[storage] init failed', error);
-      });
+    ensureLocalDataReady().catch(error => {
+      console.error('[app] local bootstrap failed', error);
+    });
   }, []);
 
   return (

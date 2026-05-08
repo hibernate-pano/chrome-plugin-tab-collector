@@ -6,7 +6,6 @@ export type ProductEventName =
   | 'session_saved'
   | 'session_renamed'
   | 'session_restored'
-  | 'session_restored_again'
   | 'search_performed'
   | 'search_filtered'
   | 'session_favorited'

@@ -22,26 +22,10 @@ export interface TabGroup {
   displayOrder?: number;
 }
 
-export type SessionRestoreSource = 'list' | 'search' | 'recent-save' | 'recent-restore';
-
-export interface RecentRestoreEntry {
-  sessionId: string;
-  name: string;
-  notes?: string;
-  tabCount: number;
-  pinnedCount: number;
-  isLocked: boolean;
-  restoredAt: string;
-  source: SessionRestoreSource;
-  tabs: Array<{
-    url: string;
-    pinned: boolean;
-  }>;
-}
+export type SessionRestoreSource = 'list' | 'search';
 
 export interface TabState {
   groups: TabGroup[];
-  recentRestores: RecentRestoreEntry[];
   activeGroupId: string | null;
   isLoading: boolean;
   error: string | null;
@@ -72,5 +56,4 @@ export interface UserSettings {
   themeMode: 'light' | 'dark' | 'auto';
   themeStyle?: ThemeStyle;
   reorderMode?: boolean;
-  useDoubleColumnLayout?: boolean;
 }

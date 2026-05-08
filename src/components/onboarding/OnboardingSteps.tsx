@@ -85,7 +85,7 @@ export const SearchStep: React.FC = () => (
       <div className="onboarding-feature-card">
         <div className="onboarding-feature-icon">⏱️</div>
         <div className="onboarding-feature-title">按时间过滤</div>
-        <div className="onboarding-feature-desc">快速收敛到最近保存或更久之前</div>
+        <div className="onboarding-feature-desc">快速收敛到最近创建或更久之前</div>
       </div>
       <div className="onboarding-feature-card">
         <div className="onboarding-feature-icon">⭐</div>
@@ -105,7 +105,7 @@ export const RestoreStep: React.FC = () => (
     <p className="onboarding-description">
       恢复整个会话时，会默认在新窗口中打开
       <br />
-      你还能在“最近恢复”里再次回到刚刚的工作现场
+      原会话也会按照锁定状态决定是否继续保留
     </p>
     <div className="onboarding-feature-grid">
       <div className="onboarding-feature-card">
@@ -120,8 +120,8 @@ export const RestoreStep: React.FC = () => (
       </div>
       <div className="onboarding-feature-card">
         <div className="onboarding-feature-icon">🕘</div>
-        <div className="onboarding-feature-title">最近恢复</div>
-        <div className="onboarding-feature-desc">知道你上次从哪里恢复过这个会话</div>
+        <div className="onboarding-feature-title">锁定保留</div>
+        <div className="onboarding-feature-desc">重要会话可以在恢复后继续留在列表里</div>
       </div>
     </div>
   </div>

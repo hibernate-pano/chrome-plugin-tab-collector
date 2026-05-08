@@ -92,20 +92,3 @@ export function isFaviconUrlSafe(faviconUrl: string | undefined | null): boolean
     return false;
   }
 }
-
-/**
- * 迁移现有数据，清理不安全的 favicon URLs
- * 这个函数应该在应用启动时调用一次
- */
-export async function migrateFaviconUrls(): Promise<void> {
-  try {
-    // 这里需要导入storage，但为了避免循环依赖，我们将在调用处处理
-    console.log('开始迁移 favicon URLs...');
-
-    // 注意：实际的迁移逻辑将在调用此函数的地方实现
-    // 这里只是一个占位符函数
-
-  } catch (error) {
-    console.error('迁移 favicon URLs 失败:', error);
-  }
-}
