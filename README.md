@@ -1,6 +1,6 @@
 # Tag Collector
 
-Current version: `0.1`
+Current version: `0.1.3`
 
 Tag Collector is a local-first Chrome extension for saving tab sessions, finding them quickly, and reopening them when you need to resume work.
 
