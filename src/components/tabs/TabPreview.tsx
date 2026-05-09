@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tab } from '@/types/tab';
+import { isFaviconUrlSafe } from '@/utils/faviconUtils';
 
 interface TabPreviewProps {
   tab: Tab;
@@ -27,8 +28,8 @@ export const TabPreview: React.FC<TabPreviewProps> = ({ tab, visible, position }
       // 在实际应用中，你可能需要一个更复杂的服务来生成预览图
       const img = new Image();
       
-      // 首先尝试使用 favicon
-      if (tab.favicon) {
+      // 本地模式下只允许安全的本地 favicon 资源
+      if (tab.favicon && isFaviconUrlSafe(tab.favicon)) {
         img.src = tab.favicon;
       } else {
         // 如果没有 favicon，使用一个默认图标

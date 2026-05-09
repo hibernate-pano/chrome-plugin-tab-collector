@@ -7,6 +7,8 @@ import {
   validateThemeMode,
   validateThemeStyle,
 } from './settingsNormalization';
+import { sanitizeText, validateUrl } from './inputValidation';
+import { sanitizeFaviconUrl } from './faviconUtils';
 
 // 缓存 TTL 配置常量
 export const CACHE_TTL = {
@@ -55,6 +57,83 @@ interface ExportData {
     settings: UserSettings;
   };
 }
+
+const normalizeTimestamp = (value: unknown, fallback: string): string => {
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
+};
+
+const sanitizeImportedTabGroups = (groups: unknown[]): TabGroup[] => {
+  const now = new Date().toISOString();
+
+  return groups.flatMap((rawGroup, groupIndex) => {
+    if (!rawGroup || typeof rawGroup !== 'object') {
+      return [];
+    }
+
+    const candidateGroup = rawGroup as Partial<TabGroup>;
+    const rawTabs = Array.isArray(candidateGroup.tabs) ? candidateGroup.tabs : [];
+    const tabs = rawTabs.flatMap(rawTab => {
+      if (!rawTab || typeof rawTab !== 'object') {
+        return [];
+      }
+
+      const candidateTab = rawTab as Partial<TabGroup['tabs'][number]>;
+      const validatedUrl = validateUrl(candidateTab.url ?? '');
+      if (!validatedUrl.isValid || !validatedUrl.sanitized) {
+        return [];
+      }
+
+      const titleResult = sanitizeText(
+        candidateTab.title || validatedUrl.sanitized,
+        500
+      );
+
+      return [{
+        id: typeof candidateTab.id === 'string' && candidateTab.id.trim() ? candidateTab.id : crypto.randomUUID(),
+        url: validatedUrl.sanitized,
+        title: titleResult.isValid && titleResult.sanitized
+          ? titleResult.sanitized
+          : validatedUrl.sanitized,
+        favicon: sanitizeFaviconUrl(candidateTab.favicon),
+        createdAt: normalizeTimestamp(candidateTab.createdAt, now),
+        lastAccessed: normalizeTimestamp(candidateTab.lastAccessed, now),
+        pinned: !!candidateTab.pinned,
+      }];
+    });
+
+    if (tabs.length === 0) {
+      return [];
+    }
+
+    const nameResult = sanitizeText(
+      candidateGroup.name || `导入的会话 ${groupIndex + 1}`,
+      100
+    );
+    const notesResult = typeof candidateGroup.notes === 'string'
+      ? sanitizeText(candidateGroup.notes, 5000)
+      : null;
+
+    return [{
+      id: typeof candidateGroup.id === 'string' && candidateGroup.id.trim() ? candidateGroup.id : crypto.randomUUID(),
+      name: nameResult.isValid && nameResult.sanitized
+        ? nameResult.sanitized
+        : `导入的会话 ${groupIndex + 1}`,
+      tabs,
+      createdAt: normalizeTimestamp(candidateGroup.createdAt, now),
+      updatedAt: normalizeTimestamp(candidateGroup.updatedAt, now),
+      isLocked: !!candidateGroup.isLocked,
+      isFavorite: !!candidateGroup.isFavorite,
+      notes: notesResult?.isValid ? notesResult.sanitized : undefined,
+      version: typeof candidateGroup.version === 'number' ? candidateGroup.version : undefined,
+      displayOrder: typeof candidateGroup.displayOrder === 'number' ? candidateGroup.displayOrder : undefined,
+    }];
+  });
+};
 
 class ChromeStorage {
   private async ensureVersion() {
@@ -223,9 +302,14 @@ class ChromeStorage {
         throw new Error('无效的导入数据格式');
       }
 
+      const importedGroups = sanitizeImportedTabGroups(data.data.groups);
+      if (importedGroups.length === 0) {
+        throw new Error('导入文件中没有有效的标签页数据');
+      }
+
       // 导入标签组，并按创建时间倒序排列
       const existingGroups = await this.getGroups();
-      const allGroups = [...data.data.groups, ...existingGroups];
+      const allGroups = [...importedGroups, ...existingGroups];
       // 按创建时间倒序排列，确保最新创建的标签组在前面
       const sortedGroups = allGroups.sort((a, b) => {
         const dateA = new Date(a.createdAt);
@@ -261,7 +345,7 @@ class ChromeStorage {
       }
 
       // 解析 OneTab 格式的文本
-      const parsedGroups = parseOneTabFormat(text);
+      const parsedGroups = sanitizeImportedTabGroups(parseOneTabFormat(text));
 
       if (parsedGroups.length === 0) {
         throw new Error('解析失败或没有有效的标签组');

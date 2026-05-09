@@ -1,5 +1,6 @@
 import { tabManager } from '@/background/TabManager';
 import { ensureLocalDataReady } from '@/utils/appBootstrap';
+import { validateUrl } from '@/utils/inputValidation';
 
 // Chrome 扩展的 Service Worker
 // 为了避免模块导入问题，早期版本内联了存储逻辑；现统一使用 utils/storage 以与前端页面共享同一数据源（IndexedDB）
@@ -203,7 +204,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const pinned: boolean | undefined = data.pinned ?? data.tab?.pinned;
 
         if (singleUrl) {
-          chrome.tabs.create({ url: singleUrl, active: false, pinned })
+          const validated = validateUrl(singleUrl);
+          if (!validated.isValid || !validated.sanitized) {
+            sendResponse({ success: false, error: validated.error || '无效 URL' });
+            return false;
+          }
+
+          chrome.tabs.create({ url: validated.sanitized, active: false, pinned })
             .then(() => sendResponse({ success: true }))
             .catch(error => sendResponse({ success: false, error: error.message }));
           return true;

@@ -2,6 +2,7 @@ import { storage } from '@/utils/storage';
 import { createTabGroupFromChromeTabs, filterValidTabs } from '@/domain/tabGroup';
 import { cacheManager } from '@/utils/performance';
 import { trackProductEvent } from '@/utils/productEvents';
+import { validateUrl } from '@/utils/inputValidation';
 
 /**
  * 统一的标签页管理器
@@ -198,10 +199,15 @@ export class TabManager {
    */
   async openTab(url: string): Promise<void> {
     try {
+      const validated = validateUrl(url);
+      if (!validated.isValid || !validated.sanitized) {
+        throw new Error(validated.error || '无效的标签页地址');
+      }
+
       const existingTabs = await this.getExistingTabManagerTabs();
       const tabManagerId = existingTabs.length > 0 ? existingTabs[0].id : null;
 
-      await chrome.tabs.create({ url, active: false });
+      await chrome.tabs.create({ url: validated.sanitized, active: false });
 
       if (tabManagerId) {
         await chrome.tabs.update(tabManagerId, { active: true });
@@ -218,11 +224,25 @@ export class TabManager {
    */
   async openTabsInNewWindow(tabs: Array<{ url: string; pinned?: boolean }>): Promise<void> {
     try {
-      if (tabs.length === 0) {
+      const validatedTabs: Array<{ url: string; pinned?: boolean }> = [];
+      for (const tab of tabs) {
+        const validated = validateUrl(tab.url);
+        if (!validated.isValid || !validated.sanitized) {
+          continue;
+        }
+
+        validatedTabs.push({
+          url: validated.sanitized,
+          pinned: tab.pinned,
+        });
+      }
+
+      if (validatedTabs.length === 0) {
         return;
       }
 
-      const [firstTab, ...remainingTabs] = tabs;
+      const firstTab = validatedTabs[0];
+      const remainingTabs = validatedTabs.slice(1);
       const createdWindow = await chrome.windows.create({ url: firstTab.url, focused: true });
       const targetWindowId = createdWindow.id;
       const createdFirstTabId = createdWindow.tabs?.[0]?.id;

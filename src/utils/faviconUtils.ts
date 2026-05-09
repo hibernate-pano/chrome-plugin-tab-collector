@@ -4,7 +4,7 @@
  */
 
 /**
- * 清理和验证 favicon URL，确保符合 CSP 策略
+ * 清理和验证 favicon URL，确保不会触发任何远程图片请求
  * @param faviconUrl 原始 favicon URL
  * @returns 安全的 favicon URL 或空字符串
  */
@@ -25,11 +25,11 @@ export function sanitizeFaviconUrl(faviconUrl: string | undefined | null): strin
   try {
     const url = new URL(cleanUrl);
 
-    // 允许的协议：https、http、data、chrome-extension
-    const allowedProtocols = ['https:', 'http:', 'data:', 'chrome-extension:'];
+    // 本地模式只允许扩展内资源或内联 data URL
+    const allowedProtocols = ['data:', 'chrome-extension:'];
 
     // 危险的协议列表
-    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'ftp:'];
+    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'ftp:', 'http:', 'https:'];
 
     // 检查是否是危险协议
     if (dangerousProtocols.includes(url.protocol)) {
@@ -64,7 +64,7 @@ export function sanitizeFaviconUrls(faviconUrls: (string | undefined | null)[]):
 
 /**
  * 检查 favicon URL 是否安全
- * 现在允许 HTTP 和 HTTPS 协议，但仍然过滤危险协议
+ * 本地模式下不允许任何会触发远程请求的协议
  * @param faviconUrl favicon URL
  * @returns 是否安全
  */
@@ -74,11 +74,11 @@ export function isFaviconUrlSafe(faviconUrl: string | undefined | null): boolean
   try {
     const url = new URL(faviconUrl);
 
-    // 允许的协议：https、http、data、chrome-extension
-    const allowedProtocols = ['https:', 'http:', 'data:', 'chrome-extension:'];
+    // 本地模式只允许扩展内资源或内联 data URL
+    const allowedProtocols = ['data:', 'chrome-extension:'];
 
     // 危险的协议列表
-    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'ftp:'];
+    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'ftp:', 'http:', 'https:'];
 
     // 检查是否是危险协议
     if (dangerousProtocols.includes(url.protocol)) {
