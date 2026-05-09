@@ -12,9 +12,19 @@ const tempManifest = {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd());
+  const popupInputs = {
+    'src/popup/index': resolve(__dirname, 'src/popup/index.html'),
+    popup: resolve(__dirname, 'popup.html'),
+  };
+  const buildInputs = command === 'build'
+    ? {
+        ...popupInputs,
+        'service-worker': resolve(__dirname, 'src/service-worker.ts'),
+      }
+    : popupInputs;
 
   return {
     // 生产环境移除 console 与 debugger
@@ -66,11 +76,7 @@ export default defineConfig(({ mode }) => {
       // 为Chrome扩展设置相对路径
       assetsDir: '',
       rollupOptions: {
-        input: {
-          'src/popup/index': resolve(__dirname, 'src/popup/index.html'),
-          'popup': resolve(__dirname, 'popup.html'),
-          'service-worker': resolve(__dirname, 'src/service-worker.ts')
-        },
+        input: buildInputs,
         output: {
           entryFileNames: (chunk) =>
             chunk.name === 'service-worker' ? 'service-worker.js' : '[name]-[hash].js',
