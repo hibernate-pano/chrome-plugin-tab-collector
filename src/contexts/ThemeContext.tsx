@@ -30,8 +30,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
   
-  // 主题风格状态，默认为 'legacy'
-  const themeStyle: ThemeStyle = themeStyleFromStore || 'legacy';
+  // 主题风格状态，默认为 'workbench'
+  const themeStyle: ThemeStyle = themeStyleFromStore || 'workbench';
 
   // 确保刷新后优先加载已保存的主题设置，避免短暂回退到默认主题
   useEffect(() => {
@@ -102,6 +102,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!settingsReady) return;
     document.documentElement.dataset.theme = themeStyle;
   }, [themeStyle, settingsReady]);
+
+  useEffect(() => {
+    if (!settingsReady) return;
+    if (themeStyleFromStore !== 'workbench') {
+      dispatch(updateSettings({ themeStyle: 'workbench' }));
+      dispatch(saveSettings() as any);
+    }
+  }, [dispatch, settingsReady, themeStyleFromStore]);
 
   // 更新主题模式
   const setThemeMode = useCallback((mode: ThemeMode) => {

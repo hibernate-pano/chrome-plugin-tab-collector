@@ -41,16 +41,15 @@ export const TabVaultIcon: React.FC<TabVaultIconProps> = ({
         y="3"
         width="18"
         height="18"
-        rx="5"
+        rx="3"
         stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
       />
-
-      {/* 简洁的标签页指示器 */}
-      <rect x="7" y="7" width="10" height="2" rx="1" fill="currentColor" />
-      <rect x="7" y="11" width="7" height="2" rx="1" fill="currentColor" opacity="0.6" />
-      <rect x="7" y="15" width="5" height="2" rx="1" fill="currentColor" opacity="0.3" />
+      <path d="M3 8.5h18" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="6.75" y="11" width="3.25" height="3.25" rx="0.75" fill="currentColor" opacity="0.95" />
+      <rect x="11.5" y="11" width="5.75" height="1.5" rx="0.75" fill="currentColor" opacity="0.8" />
+      <rect x="11.5" y="14" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.45" />
     </svg>
   );
 };
@@ -107,10 +106,11 @@ export const TabVaultLogo: React.FC<{
           Tag Collector
         </span>
         <span
-          className="text-xs font-medium px-1.5 py-0.5 rounded-md"
+          className="rounded-sm border px-1 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em]"
           style={{
-            background: 'var(--color-accent-subtle)',
-            color: 'var(--color-accent)'
+            borderColor: 'var(--color-border-default)',
+            background: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-secondary)'
           }}
         >
           Local

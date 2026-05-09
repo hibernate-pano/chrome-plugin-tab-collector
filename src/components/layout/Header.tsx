@@ -199,112 +199,117 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
   return (
     <header className="header">
-      <div className={`w-full py-3 px-4 sm:px-6 ${getContainerWidthClass()}`}>
-        <div className="flex items-center justify-between gap-4">
-          {/* Logo 区域 */}
-          <button
-            onClick={handleResetToDefaultView}
-            className="flex items-center gap-3 group flat-interaction"
-            title="回到默认视图"
-            aria-label="回到默认视图"
-          >
-            <TabVaultLogo size="sm" showIcon={true} />
+      <div className={`w-full px-4 py-2.5 sm:px-6 ${getContainerWidthClass()}`}>
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-start justify-between gap-4">
+            <button
+              onClick={handleResetToDefaultView}
+              className="flex items-start gap-2.5 text-left group flat-interaction"
+              title="回到默认视图"
+              aria-label="回到默认视图"
+            >
+              <TabVaultLogo size="sm" showIcon={true} />
+              <div className="hidden sm:flex flex-col pt-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-accent)]">
+                  Session Desk
+                </span>
+                <span className="text-[11px] text-[var(--color-text-secondary)]">
+                  紧凑的临时标签收纳台
+                </span>
+              </div>
+            </button>
+
             <div className="hidden sm:block">
               <TabCounter />
             </div>
-          </button>
-
-          {/* 搜索框 */}
-          <div className="flex-1 max-w-md mx-4">
-            <div className="relative">
-              {isSearchBusy && (
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 search-icon">
-                  <LoadingIcon />
-                </div>
-              )}
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="搜索会话、备注或标签..."
-                className={`input search-input w-full py-2 text-sm ${isSearchBusy ? 'pl-10' : 'pl-3'}`}
-                onChange={handleSearch}
-                value={searchValue}
-                aria-label="搜索会话、备注或标签页"
-                role="searchbox"
-                autoComplete="off"
-                aria-busy={isSearchBusy}
-              />
-              {searchValue && (
-                <button
-                  onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 search-clear-btn flat-interaction transition-colors"
-                  title="清空搜索"
-                >
-                  <CloseIcon />
-                </button>
-              )}
-            </div>
           </div>
 
-          {/* 操作按钮组 */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            {/* 布局切换 */}
-            <Tooltip
-              content={settings.layoutMode === 'single' ? '切换双栏布局' : '切换单栏布局'}
-              position="bottom"
-            >
-              <button
-                onClick={handleToggleLayout}
-                className="btn-icon flat-interaction"
-                aria-label={settings.layoutMode === 'single' ? '切换为双栏布局' : '切换为单栏布局'}
-              >
-                {settings.layoutMode === 'single' ? <LayoutSingleIcon /> : <LayoutDoubleIcon />}
-              </button>
-            </Tooltip>
+          <div className="flex items-center gap-2.5">
+            <div className="flex-1 min-w-0">
+              <div className="relative">
+                {isSearchBusy && (
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 search-icon">
+                    <LoadingIcon />
+                  </div>
+                )}
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="搜索会话、备注、域名或标签标题"
+                  className={`input search-input w-full py-2 text-sm ${isSearchBusy ? 'pl-10' : 'pl-3'}`}
+                  onChange={handleSearch}
+                  value={searchValue}
+                  aria-label="搜索会话、备注或标签页"
+                  role="searchbox"
+                  autoComplete="off"
+                  aria-busy={isSearchBusy}
+                />
+                {searchValue && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 search-clear-btn flat-interaction transition-colors"
+                    title="清空搜索"
+                  >
+                    <CloseIcon />
+                  </button>
+                )}
+              </div>
+            </div>
 
-            {/* 清理重复 */}
-            <Tooltip content="清理重复标签" position="bottom">
-              <button
-                onClick={handleCleanDuplicateTabs}
-                className="btn-icon flat-interaction"
-                aria-label="清理重复标签页"
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <Tooltip
+                content={settings.layoutMode === 'single' ? '切换双栏布局' : '切换单栏布局'}
+                position="bottom"
               >
-                <CleanIcon />
-              </button>
-            </Tooltip>
+                <button
+                  onClick={handleToggleLayout}
+                  className="btn-icon flat-interaction"
+                  aria-label={settings.layoutMode === 'single' ? '切换为双栏布局' : '切换为单栏布局'}
+                >
+                  {settings.layoutMode === 'single' ? <LayoutSingleIcon /> : <LayoutDoubleIcon />}
+                </button>
+              </Tooltip>
 
-            {/* 主题切换 */}
-            <SimpleThemeToggle />
+              <Tooltip content="清理重复标签" position="bottom">
+                <button
+                  onClick={handleCleanDuplicateTabs}
+                  className="btn-icon flat-interaction"
+                  aria-label="清理重复标签页"
+                >
+                  <CleanIcon />
+                </button>
+              </Tooltip>
 
-            {/* 保存按钮 */}
-            <Tooltip content="保存当前窗口为会话" position="bottom">
-              <button
-                onClick={handleSaveAllTabs}
-                className="btn btn-primary flat-interaction hidden sm:flex whitespace-nowrap"
-                aria-label="保存当前窗口中的所有标签页为会话"
-              >
-                <SaveIcon />
-                <span>保存会话</span>
-              </button>
-              <button
-                onClick={handleSaveAllTabs}
-                className="btn btn-primary flat-interaction sm:hidden p-2"
-                aria-label="保存当前窗口中的所有标签页为会话"
-              >
-                <SaveIcon />
-              </button>
-            </Tooltip>
+              <SimpleThemeToggle />
 
-            {/* 更多菜单 */}
-            <div className="relative">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="btn-icon flat-interaction"
-                aria-label="菜单"
-              >
-                <MenuIcon />
-              </button>
-              {showDropdown && <HeaderDropdown onClose={() => setShowDropdown(false)} />}
+              <Tooltip content="保存当前窗口为会话" position="bottom">
+                <button
+                  onClick={handleSaveAllTabs}
+                  className="btn btn-primary flat-interaction hidden h-8 whitespace-nowrap px-3 text-xs sm:flex"
+                  aria-label="保存当前窗口中的所有标签页为会话"
+                >
+                  <SaveIcon />
+                  <span>保存会话</span>
+                </button>
+                <button
+                  onClick={handleSaveAllTabs}
+                  className="btn btn-primary flat-interaction h-8 px-2.5 py-2 sm:hidden"
+                  aria-label="保存当前窗口中的所有标签页为会话"
+                >
+                  <SaveIcon />
+                </button>
+              </Tooltip>
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="btn-icon flat-interaction"
+                  aria-label="菜单"
+                >
+                  <MenuIcon />
+                </button>
+                {showDropdown && <HeaderDropdown onClose={() => setShowDropdown(false)} />}
+              </div>
             </div>
           </div>
         </div>

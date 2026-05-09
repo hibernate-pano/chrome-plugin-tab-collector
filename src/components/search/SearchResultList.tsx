@@ -339,7 +339,7 @@ export const SearchResultList: React.FC<SearchResultListProps> = ({ searchQuery 
     <div className="tab-item group/tab">
       <SafeFavicon src={tab.favicon} alt="" className="tab-item-favicon" />
 
-      <div className="flex-1 min-w-0 flex items-center gap-3">
+      <div className="tab-item-main">
         <a
           href="#"
           className="tab-item-title tab-item-title-hover transition-colors flex items-center gap-1"
@@ -352,7 +352,7 @@ export const SearchResultList: React.FC<SearchResultListProps> = ({ searchQuery 
           <HighlightText text={tab.title} highlight={searchQuery} />
           {tab.pinned && <PinIcon />}
         </a>
-        <span className="tab-item-url hidden sm:block">{getDisplayUrl(tab.url)}</span>
+        <span className="tab-item-url">{getDisplayUrl(tab.url)}</span>
       </div>
 
       <div className="tab-item-actions">

@@ -54,34 +54,21 @@ export const MainApp: React.FC = () => {
       }
     >
       <DndProvider>
-        <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100 flex flex-col">
+        <div className="min-h-screen flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
           <Header onSearch={setSearchQuery} />
-          <main className={`flex-1 w-full py-2 ${getContainerWidthClass()}`}>
+          <main className={`flex-1 w-full pb-4 pt-3 ${getContainerWidthClass()}`}>
             <Suspense fallback={<div className="p-4 text-center">加载标签列表...</div>}>
               <TabList searchQuery={deferredSearchQuery} />
             </Suspense>
           </main>
-          <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400">
-            <div className={`w-full py-2 ${getContainerWidthClass()} flex justify-between items-center`}>
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-primary-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Tag Collector {getAppVersionLabel()}</span>
+          <footer className="border-t border-[var(--color-border-default)] bg-[var(--color-bg-overlay)] text-xs text-[var(--color-text-secondary)]">
+            <div className={`flex items-center justify-between gap-3 py-2 ${getContainerWidthClass()}`}>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]" />
+                <span className="font-medium">Tag Collector {getAppVersionLabel()}</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <span>Save the session. Find it later.</span>
+              <div className="hidden sm:block text-[var(--color-text-muted)]">
+                临时收纳当前工作窗口，恢复时保持节奏不断档
               </div>
             </div>
           </footer>

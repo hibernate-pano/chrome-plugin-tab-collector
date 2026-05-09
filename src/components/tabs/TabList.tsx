@@ -77,6 +77,9 @@ export const TabList: React.FC<TabListProps> = ({ searchQuery }) => {
 
   const filteredGroups = sortedGroups;
   const totalTabCount = filteredGroups.reduce((count, group) => count + group.tabs.length, 0);
+  const favoriteCount = filteredGroups.filter(group => group.isFavorite).length;
+  const lockedCount = filteredGroups.filter(group => group.isLocked).length;
+  const latestSession = filteredGroups[0];
 
   if (filteredGroups.length === 0 && !searchQuery) {
     return (
@@ -119,6 +122,55 @@ export const TabList: React.FC<TabListProps> = ({ searchQuery }) => {
 
   return (
     <div className="space-y-3 micro-interaction-container">
+      {!searchQuery && filteredGroups.length > 0 && (
+      <section className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-secondary)] px-4 py-3 shadow-[var(--shadow-card)] md:col-span-2">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-accent)]">
+                Session Desk
+              </p>
+              <h2 className="mt-1 text-base font-semibold text-[var(--color-text-primary)]">
+                已保存的临时工作会话
+              </h2>
+              <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
+                用紧凑清晰的会话列表替代零散标签页，恢复上下文更快。
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {[
+                { label: '会话', value: filteredGroups.length },
+                { label: '标签', value: totalTabCount },
+                { label: '重点', value: favoriteCount + lockedCount },
+              ].map(item => (
+                <div
+                  key={item.label}
+                  className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)] px-3 py-2"
+                >
+                  <div className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                    {item.label}
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-[var(--color-text-primary)]">
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+
+              <div className="min-w-[11rem] rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)] px-3 py-2">
+                <div className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                  最新会话
+                </div>
+                <div className="mt-1 truncate text-sm font-semibold text-[var(--color-text-primary)]">
+                  {latestSession?.name}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      )}
+
       {searchQuery ? (
         <SearchResultList searchQuery={searchQuery} />
       ) : (

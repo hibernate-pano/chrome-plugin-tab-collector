@@ -1,0 +1,146 @@
+html[data-theme='workbench'] {
+  --color-bg-primary: #f6f7f9;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f3f4f6;
+  --color-bg-elevated: #ffffff;
+  --color-bg-overlay: rgba(255, 255, 255, 0.9);
+  --color-text-primary: #171a1f;
+  --color-text-secondary: #505762;
+  --color-text-tertiary: #707887;
+  --color-text-muted: #8d95a3;
+  --color-border-default: #d8dde5;
+  --color-border-subtle: #eceff3;
+  --color-border-strong: #bec6d1;
+  --color-accent: #db0011;
+  --color-accent-hover: #b1000d;
+  --color-accent-subtle: rgba(219, 0, 17, 0.07);
+  --color-warning: #c77800;
+  --color-danger: #db0011;
+  --color-success: #177245;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 6px 16px rgba(15, 23, 42, 0.06);
+  --font-family-sans: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+html[data-theme='workbench'].dark {
+  --color-bg-primary: #111315;
+  --color-bg-secondary: #181b1f;
+  --color-bg-tertiary: #1f2329;
+  --color-bg-elevated: #23272e;
+  --color-bg-overlay: rgba(24, 27, 31, 0.88);
+  --color-text-primary: #f1f2f4;
+  --color-text-secondary: #c6cbd2;
+  --color-text-tertiary: #a3acb7;
+  --color-text-muted: #7d8694;
+  --color-border-default: #333942;
+  --color-border-subtle: #252a31;
+  --color-border-strong: #4a5360;
+  --color-accent: #ff3040;
+  --color-accent-hover: #ff5966;
+  --color-accent-subtle: rgba(255, 48, 64, 0.12);
+  --color-warning: #f4a323;
+  --color-danger: #ff5966;
+  --color-success: #40a770;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-card-hover: 0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme='workbench'] body {
+  background:
+    linear-gradient(180deg, rgba(219, 0, 17, 0.028) 0, rgba(219, 0, 17, 0) 76px),
+    var(--color-bg-primary);
+}
+
+html[data-theme='workbench'] .btn {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+html[data-theme='workbench'] .btn-primary {
+  box-shadow: none;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+html[data-theme='workbench'] .btn-primary:hover {
+  box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.04);
+  color: #ffffff;
+}
+
+html[data-theme='workbench'].dark .btn-primary {
+  color: #ffffff;
+}
+
+html[data-theme='workbench'] .btn-icon {
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+html[data-theme='workbench'] .btn-icon:hover {
+  border-color: var(--color-border-default);
+}
+
+html[data-theme='workbench'] .search-input {
+  border-radius: 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-default);
+}
+
+html[data-theme='workbench'] .header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+html[data-theme='workbench'] .tab-group-card {
+  border-radius: 10px;
+  border-color: var(--color-border-default);
+  box-shadow: var(--shadow-card);
+}
+
+html[data-theme='workbench'] .tab-group-card + .tab-group-card {
+  margin-top: -0.125rem;
+}
+
+html[data-theme='workbench'] .tab-group-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card-hover);
+}
+
+html[data-theme='workbench'] .tab-group-header {
+  background:
+    linear-gradient(90deg, rgba(219, 0, 17, 0.02), rgba(219, 0, 17, 0) 110px),
+    var(--color-bg-tertiary);
+}
+
+html[data-theme='workbench'] .tab-group-count {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+}
+
+html[data-theme='workbench'].dark .tab-group-count {
+  background: rgba(255, 48, 64, 0.12);
+  color: #ff7c87;
+}
+
+html[data-theme='workbench'] .tab-item:hover {
+  background: rgba(15, 23, 42, 0.024);
+}
+
+html[data-theme='workbench'].dark .tab-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme='workbench'] .tab-item {
+  min-height: 42px;
+}
+
+html[data-theme='workbench'] .tab-group-action-accent.btn-primary {
+  color: #ffffff;
+  min-width: 82px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme='workbench'] .tab-group-action-accent.btn-primary svg {
+  flex-shrink: 0;
+}

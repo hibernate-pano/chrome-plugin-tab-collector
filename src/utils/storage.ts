@@ -42,7 +42,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   layoutMode: 'single' as LayoutMode,
   showNotifications: false,
   themeMode: 'auto',
-  themeStyle: 'legacy',
+  themeStyle: 'workbench',
   collectPinnedTabs: false,
 };
 

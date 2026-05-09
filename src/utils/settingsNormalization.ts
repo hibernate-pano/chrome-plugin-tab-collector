@@ -1,6 +1,7 @@
 import type { LayoutMode, ThemeStyle, UserSettings } from '../types/tab';
 
 export const VALID_THEME_STYLES: ThemeStyle[] = [
+  'workbench',
   'legacy',
   'classic',
   'aurora',
@@ -22,7 +23,7 @@ export function validateThemeStyle(value: unknown): ThemeStyle {
     return value as ThemeStyle;
   }
 
-  return 'legacy';
+  return 'workbench';
 }
 
 export function validateThemeMode(value: unknown): 'light' | 'dark' | 'auto' {

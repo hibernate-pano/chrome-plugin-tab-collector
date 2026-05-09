@@ -65,6 +65,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notesDraft, setNotesDraft] = useState(group.notes || '');
+  const pinnedCount = group.tabs.filter(tab => tab.pinned).length;
 
   useEffect(() => {
     setNewName(group.name);
@@ -287,13 +288,11 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
       role="region"
       aria-labelledby={`tab-group-title-${group.id}`}
     >
-      {/* 标签组头部 */}
       <div className="tab-group-header">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {/* 折叠按钮 */}
+        <div className="flex items-start gap-2.5 flex-1 min-w-0">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="btn-icon p-1 -ml-1 micro-interaction-button"
+            className="btn-icon mt-0.5 p-0.5 -ml-0.5 micro-interaction-button"
             aria-label={isCollapsed ? '展开会话' : '折叠会话'}
             aria-expanded={!isCollapsed}
           >
@@ -309,88 +308,85 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
             </svg>
           </button>
 
-          {/* 标题 */}
-          {isEditing ? (
-            <input
-              type="text"
-              value={newName}
-              onChange={handleNameChange}
-              onBlur={handleNameSubmit}
-              onKeyDown={handleKeyDown}
-              className="input py-1 px-2 text-sm font-medium flex-1"
-              autoFocus
-              aria-label="编辑会话名称"
-            />
-          ) : (
-            <div className="min-w-0 flex items-center gap-2">
-              <h3
-                id={`tab-group-title-${group.id}`}
-                className="tab-group-title truncate cursor-pointer tab-group-title-hover transition-colors flat-interaction"
-                onClick={() => !group.isLocked && setIsEditing(true)}
-                title={group.isLocked ? group.name : '点击编辑会话名称'}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    if (!group.isLocked) setIsEditing(true);
-                  }
-                }}
-              >
-                {group.name}
-              </h3>
+          <div className="min-w-0 flex-1 flex items-center gap-1.5 overflow-hidden">
+            <div className="min-w-0 flex items-center gap-1.5 flex-1 overflow-hidden">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={handleNameChange}
+                  onBlur={handleNameSubmit}
+                  onKeyDown={handleKeyDown}
+                  className="input py-1 px-2 text-sm font-medium flex-1"
+                  autoFocus
+                  aria-label="编辑会话名称"
+                />
+              ) : (
+                <h3
+                  id={`tab-group-title-${group.id}`}
+                  className="tab-group-title min-w-0 shrink truncate cursor-pointer tab-group-title-hover transition-colors flat-interaction"
+                  onClick={() => !group.isLocked && setIsEditing(true)}
+                  title={group.isLocked ? group.name : '点击编辑会话名称'}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      if (!group.isLocked) setIsEditing(true);
+                    }
+                  }}
+                >
+                  {group.name}
+                </h3>
+              )}
+
               {group.isFavorite && (
                 <span
-                  className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                  className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:border-amber-800/60 dark:bg-amber-900/30 dark:text-amber-300"
                   title="已收藏会话"
                 >
-                  已收藏
+                  收藏
+                </span>
+              )}
+              {group.isLocked && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-secondary)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-text-secondary)]"
+                  title="会话已锁定"
+                  aria-label="会话已锁定"
+                >
+                  <span className="tab-group-lock-icon"><LockIcon locked={true} /></span>
+                  锁定
                 </span>
               )}
             </div>
-          )}
-
-          {/* 数量徽章 */}
-          <span 
-            className="tab-group-count flex-shrink-0"
-            aria-label={`包含 ${group.tabs.length} 个标签页`}
-          >
-            {group.tabs.length}
-          </span>
-
-          {/* 锁定图标 */}
-          {group.isLocked && (
-            <span 
-              className="tab-group-lock-icon flex-shrink-0" 
-              title="会话已锁定"
-              aria-label="会话已锁定"
-            >
-              <LockIcon locked={true} />
-            </span>
-          )}
-
-          {/* 时间 */}
-          <span className="tab-group-time hidden sm:block flex-shrink-0">
-            {formatTime(group.createdAt)}
-          </span>
+            <div className="tab-group-meta-row">
+              <span className="tab-group-count flex-shrink-0" aria-label={`包含 ${group.tabs.length} 个标签页`}>
+                {group.tabs.length} 个标签
+              </span>
+              {pinnedCount > 0 && (
+                <span className="tab-group-meta-chip">
+                  {pinnedCount} 个固定
+                </span>
+              )}
+              <span className="tab-group-time">{formatTime(group.createdAt)} 保存</span>
+            </div>
+          </div>
         </div>
 
-        {/* 操作按钮 */}
-        <div className="flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-all duration-200 ease-out">
-          {/* 恢复全部 */}
+        <div className="flex shrink-0 items-center gap-0.5 opacity-100 transition-all duration-200 ease-out">
           <button
             onClick={handleOpenAllTabs}
-            className="btn-icon p-1.5 tab-group-action-accent micro-interaction-button"
+            className="btn btn-primary tab-group-action-accent tab-group-restore-btn micro-interaction-button"
             title="恢复整个会话"
             aria-label={`恢复整个会话，共 ${group.tabs.length} 个标签页`}
           >
             <OpenAllIcon />
+            <span className="whitespace-nowrap">恢复</span>
           </button>
 
-          {/* 编辑 */}
           {!group.isLocked && (
             <button
               onClick={() => setIsEditing(true)}
-              className="btn-icon p-1.5 micro-interaction-button"
+              className="btn-icon p-1 micro-interaction-button"
               title="重命名会话"
               aria-label="重命名会话"
             >
@@ -400,7 +396,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
 
           <button
             onClick={handleToggleFavorite}
-            className={`btn-icon p-1.5 micro-interaction-button ${group.isFavorite ? 'text-amber-500' : ''}`}
+            className={`btn-icon p-1 micro-interaction-button ${group.isFavorite ? 'text-amber-500' : ''}`}
             title={group.isFavorite ? '取消收藏会话' : '收藏会话'}
             aria-label={group.isFavorite ? '取消收藏会话' : '收藏会话'}
           >
@@ -410,7 +406,7 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
           {!group.isLocked && (
             <button
               onClick={() => setIsEditingNotes(current => !current)}
-              className="btn-icon p-1.5 micro-interaction-button"
+              className="btn-icon p-1 micro-interaction-button"
               title={group.notes ? '编辑会话备注' : '添加会话备注'}
               aria-label={group.notes ? '编辑会话备注' : '添加会话备注'}
             >
@@ -418,21 +414,19 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
             </button>
           )}
 
-          {/* 锁定/解锁 */}
           <button
             onClick={handleToggleLock}
-            className={`btn-icon p-1.5 micro-interaction-button ${group.isLocked ? 'tab-group-lock-icon' : ''}`}
+            className={`btn-icon p-1 micro-interaction-button ${group.isLocked ? 'tab-group-lock-icon' : ''}`}
             title={group.isLocked ? '解锁会话' : '锁定会话'}
             aria-label={group.isLocked ? '解锁会话' : '锁定会话'}
           >
             <LockIcon locked={group.isLocked} />
           </button>
 
-          {/* 删除 */}
           {!group.isLocked && (
             <button
               onClick={handleDelete}
-              className="btn-icon p-1.5 tab-group-action-danger micro-interaction-button"
+              className="btn-icon p-1 tab-group-action-danger micro-interaction-button"
               title="删除会话"
               aria-label="删除会话"
             >
@@ -445,15 +439,15 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
       {(group.notes || isEditingNotes) && (
         <div className="px-4 pb-3">
           {isEditingNotes ? (
-            <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/60">
-              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300">
+            <div className="space-y-2 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-secondary)] p-3">
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)]">
                 会话备注
               </label>
               <textarea
                 value={notesDraft}
                 onChange={event => setNotesDraft(event.target.value)}
                 placeholder="给这个会话留一句备注，例如这批标签页是为哪个项目、客户或研究主题准备的。"
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-accent)] focus:outline-none"
                 rows={3}
               />
               <div className="flex items-center justify-end gap-2">
@@ -462,20 +456,20 @@ export const TabGroup: React.FC<TabGroupProps> = React.memo(({ group }) => {
                     setNotesDraft(group.notes || '');
                     setIsEditingNotes(false);
                   }}
-                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="rounded-lg border border-[var(--color-border-default)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
                 >
                   取消
                 </button>
                 <button
                   onClick={handleSaveNotes}
-                  className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700"
+                  className="rounded-lg bg-[var(--color-accent)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
                 >
                   保存备注
                 </button>
               </div>
             </div>
           ) : (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
+            <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">
               {group.notes}
             </div>
           )}

@@ -16,7 +16,7 @@ interface DraggableTabProps {
 
 // 钉住图标
 const PinIcon = () => (
-  <svg className="w-3 h-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <svg className="w-3 h-3 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
   </svg>
 );
@@ -131,11 +131,9 @@ export const DraggableTab: React.FC<DraggableTabProps> = React.memo(({
       style={{ cursor: 'grab' }}
       role="listitem"
     >
-      {/* Favicon */}
       <SafeFavicon src={tab.favicon} alt={`${tab.title} 网站图标`} className="tab-item-favicon" />
 
-      {/* 标题和 URL */}
-      <div className="flex-1 min-w-0 flex items-center gap-3">
+      <div className="tab-item-main">
         <a
           href="#"
           className="tab-item-title tab-item-title-hover transition-colors flex items-center gap-1"
@@ -153,15 +151,11 @@ export const DraggableTab: React.FC<DraggableTabProps> = React.memo(({
           {tabTitle}
           {tab.pinned && <PinIcon />}
         </a>
-        <span 
-          className="tab-item-url hidden sm:block"
-          aria-label={`网址: ${tab.url}`}
-        >
+        <span className="tab-item-url" aria-label={`网址: ${tab.url}`}>
           {displayUrl}
         </span>
       </div>
 
-      {/* 操作按钮 */}
       <div className="tab-item-actions">
         <button
           onClick={handleDelete}

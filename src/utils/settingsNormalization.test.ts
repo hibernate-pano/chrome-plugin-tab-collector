@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   layoutMode: 'single',
   showNotifications: false,
   themeMode: 'auto',
-  themeStyle: 'legacy',
+  themeStyle: 'workbench',
   collectPinnedTabs: false,
 };
 
@@ -30,7 +30,7 @@ test('normalizeStoredSettings migrates legacy double-column flag and invalid the
 
   assert.equal(result.needsRewrite, true);
   assert.equal(result.settings.layoutMode, 'double');
-  assert.equal(result.settings.themeStyle, 'legacy');
+  assert.equal(result.settings.themeStyle, 'workbench');
   assert.equal(result.settings.themeMode, 'auto');
   assert.equal(result.settings.showNotifications, true);
 });
@@ -53,7 +53,7 @@ test('normalizeStoredSettings keeps valid modern settings unchanged', () => {
 
 test('theme validators fall back to local defaults', () => {
   assert.equal(validateThemeStyle('aurora'), 'aurora');
-  assert.equal(validateThemeStyle('not-real'), 'legacy');
+  assert.equal(validateThemeStyle('not-real'), 'workbench');
   assert.equal(validateThemeMode('light'), 'light');
   assert.equal(validateThemeMode('not-real'), 'auto');
 });

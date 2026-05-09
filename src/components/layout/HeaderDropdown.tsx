@@ -8,7 +8,6 @@ import {
   toggleShowNotifications,
 } from '@/store/slices/settingsSlice';
 import { storage } from '@/utils/storage';
-import { ThemeStyleSelector } from './ThemeStyleSelector';
 import { useToast } from '@/contexts/ToastContext';
 import { trackProductEvent } from '@/utils/productEvents';
 
@@ -290,8 +289,6 @@ export const HeaderDropdown: React.FC<HeaderDropdownProps> = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
-        <ThemeStyleSelector />
         <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
 
         <div className="relative">

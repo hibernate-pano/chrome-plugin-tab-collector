@@ -35,6 +35,7 @@ export interface TabState {
 export type LayoutMode = 'single' | 'double';
 
 export type ThemeStyle =
+  | 'workbench'
   | 'legacy'
   | 'classic'
   | 'aurora'

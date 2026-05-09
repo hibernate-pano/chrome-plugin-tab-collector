@@ -137,7 +137,31 @@ interface ThemeOption {
   };
 }
 
+const WorkbenchIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+    <rect x="3.5" y="4" width="17" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3.5 9.5h17" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.5 13h3" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13 13h6" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.5 16.5h10.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const themeOptions: ThemeOption[] = [
+  {
+    value: 'workbench',
+    label: 'Workbench',
+    description: '企业工作台',
+    icon: <WorkbenchIcon />,
+    primaryColor: '#db0011',
+    secondaryColor: '#3b3f45',
+    previewColors: {
+      bg: '#f3f4f6',
+      card: '#ffffff',
+      accent: '#db0011',
+      text: '#16191d',
+    },
+  },
   {
     value: 'legacy',
     label: '原始',
